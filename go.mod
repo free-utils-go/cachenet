@@ -1,4 +1,4 @@
-module cachenet
+module github.com/free-utils-go/cachenet
 
 go 1.16
 
