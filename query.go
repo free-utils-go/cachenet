@@ -1,7 +1,6 @@
 package cachenet
 
 import (
-	"crypto/sha256"
 	"fmt"
 	"io"
 	"net/http"
@@ -17,11 +16,6 @@ import (
 
 func init() {
 	zap.InitZapSugar()
-}
-
-func Hash(url string) string {
-	sum256 := sha256.Sum256([]byte(url))
-	return fmt.Sprintf("%x", sum256)
 }
 
 //由编码后的url.Values获取cache

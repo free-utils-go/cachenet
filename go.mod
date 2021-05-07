@@ -10,3 +10,5 @@ require (
 	github.com/zzossig/rabbit v0.0.0-20210409115851-490b20ba258c
 	golang.org/x/net v0.0.0-20210428140749-89ef3d95e781
 )
+
+replace github.com/godcong/cachenet => ../cachenet
