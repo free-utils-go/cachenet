@@ -1,22 +1,21 @@
 package cachenet
 
 import (
+	"bytes"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
 
 	"github.com/antchfx/htmlquery"
 	"github.com/antchfx/xmlquery"
-	"github.com/goextension/log/zap"
 	"github.com/zzossig/rabbit"
 	"golang.org/x/net/html"
+	"golang.org/x/net/html/charset"
+	"golang.org/x/text/transform"
 )
-
-func init() {
-	zap.InitZapSugar()
-}
 
 //由编码后的url.Values获取cache
 // data := url.Values{
@@ -184,8 +183,32 @@ func PostRequest(req_url string, url_data string) (io.ReadCloser, error) {
 		return nil, fmt.Errorf("http status code: %d", resp.StatusCode)
 	}
 
-	return resp.Body, nil
+	html_bytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	html_bytes_reader := bytes.NewReader(html_bytes)
+	html_encoding, _, _ := charset.DetermineEncoding(html_bytes, "")
+
+	utf8_reader := transform.NewReader(html_bytes_reader, html_encoding.NewDecoder())
+
+	html_bytes_utf8, err := ioutil.ReadAll(utf8_reader)
+	if err != nil && html_bytes_utf8 == nil {
+		panic(err)
+	}
+
+	html_utf8_string := strings.ReplaceAll(string(html_bytes_utf8), "gb2312", "utf-8")
+
+	resp_body_utf8 := ioutil.NopCloser(bytes.NewReader([]byte(html_utf8_string)))
+
+	return resp_body_utf8, nil
 }
+
+//https://dreamerjonson.com/2019/01/22/golang-48-gbkatoUtf8/index.html
+//探测encoding
+//https://golangnote.com/topic/195.html
+//Golang io.ReadCloser 和[]byte 相互转化
 
 //由字的url获取页面
 func GetRequest(req_url string) (io.ReadCloser, error) {
@@ -206,5 +229,24 @@ func GetRequest(req_url string) (io.ReadCloser, error) {
 		return nil, fmt.Errorf("http status code: %d", resp.StatusCode)
 	}
 
-	return resp.Body, nil
+	html_bytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	html_bytes_reader := bytes.NewReader(html_bytes)
+	html_encoding, _, _ := charset.DetermineEncoding(html_bytes, "")
+
+	utf8_reader := transform.NewReader(html_bytes_reader, html_encoding.NewDecoder())
+
+	html_bytes_utf8, err := ioutil.ReadAll(utf8_reader)
+	if err != nil && html_bytes_utf8 == nil {
+		panic(err)
+	}
+
+	html_utf8_string := strings.ReplaceAll(string(html_bytes_utf8), "gb2312", "utf-8")
+
+	resp_body_utf8 := ioutil.NopCloser(bytes.NewReader([]byte(html_utf8_string)))
+
+	return resp_body_utf8, nil
 }
