@@ -185,7 +185,7 @@ func PostRequest(req_url string, url_data string) (io.ReadCloser, error) {
 
 	html_bytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("http error: %s", err.Error())
 	}
 
 	html_bytes_reader := bytes.NewReader(html_bytes)
@@ -194,7 +194,7 @@ func PostRequest(req_url string, url_data string) (io.ReadCloser, error) {
 	utf8_reader := transform.NewReader(html_bytes_reader, html_encoding.NewDecoder())
 
 	html_bytes_utf8, err := ioutil.ReadAll(utf8_reader)
-	if err != nil && html_bytes_utf8 == nil {
+	if err != nil {
 		panic(err)
 	}
 
@@ -231,7 +231,7 @@ func GetRequest(req_url string) (io.ReadCloser, error) {
 
 	html_bytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("http error: %s", err.Error())
 	}
 
 	html_bytes_reader := bytes.NewReader(html_bytes)
@@ -240,7 +240,7 @@ func GetRequest(req_url string) (io.ReadCloser, error) {
 	utf8_reader := transform.NewReader(html_bytes_reader, html_encoding.NewDecoder())
 
 	html_bytes_utf8, err := ioutil.ReadAll(utf8_reader)
-	if err != nil && html_bytes_utf8 == nil {
+	if err != nil {
 		panic(err)
 	}
 
