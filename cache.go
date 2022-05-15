@@ -198,7 +198,7 @@ func (c *Cache) dataPath(req_url string, url_data string) string {
 
 	req_url_path_sub = strings.ReplaceAll(req_url_path_sub, "&", "__")
 
-	req_url_path = req_url_path + "/" + req_url_path_sub
+	req_url_path = req_url_path + "_post/" + req_url_path_sub
 
 	return path.Join(path.Dir(c.Tmp), req_url_path)
 
